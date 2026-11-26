@@ -130,7 +130,14 @@ class BiRefNetHREngine(MatteEngine):
 
 
 def refine_foreground_rgb(image: Image.Image, alpha: Image.Image) -> Image.Image:
-    """Optional edge decontamination. This changes RGB near the matte edge."""
+    """
+    Optional edge decontamination adapted from ZhengPeng7/BiRefNet image_proc.py.
+
+    Upstream BiRefNet source is MIT-licensed and credits PhotoRoom's
+    Approximate Fast Foreground Colour Estimation implementation/paper.
+    See THIRD_PARTY_NOTICES.md for provenance and license notes.
+    This changes RGB near the matte edge.
+    """
     try:
         import cv2
     except ImportError as exc:
