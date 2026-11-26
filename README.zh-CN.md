@@ -20,17 +20,13 @@
 - 单张失败不会中断整批任务，并记录每张图片的处理结果。
 - 图片处理留在本机；首次使用时将模型下载到本地 Hugging Face 缓存。
 
-## 效果与界面示例
+## 预期效果示意
 
-### 原白底算法示例
+### 透明 PNG 合成概念
 
-**输入图：**  
-![原白底工具输入示例](legacy/white-bg-cutout/examples/demo-input.png)
+![透明 PNG 结果示意](docs/transparency-concept.svg)
 
-**透明 Alpha 输出：**  
-![原白底工具输出示例](legacy/white-bg-cutout/examples/demo-input_cutout.png)
-
-*这是仓库原白底工具附带的合成示例输入和实际透明 PNG 输出；不是 BiRefNet 结果，也不代表真实人物照片的抠图质量。*
+*这是合成插画。棋盘格代表透明区域，不是 AI 模型实测输出。*
 
 ### 质量验证关注点
 
@@ -47,15 +43,15 @@
 | PyTorch | 2.5.1 | 使用 CUDA 12.1 wheel |
 | torchvision | 0.20.1 | 与 PyTorch 2.5.1 配套 |
 | CUDA runtime | 12.1 wheel | 仍需 NVIDIA 驱动；通常不需要另装 CUDA Toolkit |
-| Transformers | 5.x（`>=5.0,<6`） | 固定模型代码包含 Transformers 5.0 兼容修正 |
-| timm | `>=1.0.23` | 上游模型代码依赖 |
+| Transformers | 5.x（>=5.0,<6） | 固定模型代码包含 Transformers 5.0 兼容修正 |
+| timm | >=1.0.23 | 上游模型代码依赖 |
 | NumPy | 1.26.4 | 为上游兼容暂时固定在 NumPy 2 以下 |
 
-BiRefNet-HR-matting 上游模型卡给出的 Transformers 加载方式使用 `trust_remote_code=True`。仓库将模型代码固定在 `app/engine/birefnet.py` 中的 revision：`5d6b6f8adcb5b417c871b1d84ceaae9871355b7f`。这会执行远程模型仓库中的 Python 代码，首次运行前应审阅对应版本。
+BiRefNet-HR-matting 上游模型卡给出的 Transformers 加载方式使用 trust_remote_code=True。仓库将模型代码固定在 app/engine/birefnet.py 中的 revision：5d6b6f8adcb5b417c871b1d84ceaae9871355b7f。这会执行远程模型仓库中的 Python 代码，首次运行前应审阅对应版本。
 
 参考资料：[BiRefNet-HR 模型页](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting) · [固定模型代码版本](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting/tree/5d6b6f8adcb5b417c871b1d84ceaae9871355b7f) · [PyTorch 官方安装选择器](https://pytorch.org/get-started/locally/) · [PyTorch 历史版本安装矩阵](https://pytorch.org/get-started/previous-versions/)
 
-选择 PyTorch / torchvision 组合时优先遵循 BiRefNet 上游依赖基线。更高版本可能可以运行，但不能未经验证就静默替换；升级后应重新执行模型 smoke test 和质量集。
+当前选择的是保守的兼容基线，不代表这些软件包是最新版本。更高版本可能可以运行，但不能未经验证就静默替换；升级后应重新执行模型 smoke test 和质量集。
 
 ## Windows 源码安装
 
@@ -63,28 +59,28 @@ BiRefNet-HR-matting 上游模型卡给出的 Transformers 加载方式使用 `tr
 2. 在仓库根目录打开 PowerShell。
 3. 执行：
 
-```powershell
+~~~powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\install_windows.ps1
-```
+~~~
 
 4. 启动桌面程序：
 
-```powershell
+~~~powershell
 .\.venv\Scripts\python.exe -m app.main
-```
+~~~
 
 5. 检查 CUDA runtime 和 GPU 张量运算：
 
-```powershell
+~~~powershell
 .\.venv\Scripts\python.exe scripts\verify_gpu.py
-```
+~~~
 
 第一次加载模型需要联网下载文件。模型缓存完成后，推理在本机运行。不要在同一个虚拟环境里再安装第二套 Python / PyTorch。
 
 ## 构建独立 Windows 运行目录
 
-执行 `scripts\build_windows.ps1`。构建结果位于 `dist/PortraitCutAI/`，发布或拷贝时要保留整个文件夹。该运行目录包含 Python 解释器和 Python 依赖；目标机器仍需安装 NVIDIA 显卡驱动。模型权重放在用户 Hugging Face 缓存目录，第一次运行时下载。
+执行 scripts/build_windows.ps1。构建结果位于 dist/PortraitCutAI/，发布或拷贝时要保留整个文件夹。该运行目录包含 Python 解释器和 Python 依赖；目标机器仍需安装 NVIDIA 显卡驱动。模型权重放在用户 Hugging Face 缓存目录，第一次运行时下载。因此，当前版本**应用代码和 Python 库可独立运行，但首次启动仍需联网下载模型，并非完全离线安装包**。
 
 PyInstaller 构建与操作系统、Python 版本和位数相关，因此应在目标 Windows 环境构建。当前先采用 **onedir** 目录模式，便于排错和检查依赖，不急于压成单个 exe。
 
@@ -101,16 +97,16 @@ PyInstaller 构建与操作系统、Python 版本和位数相关，因此应在�
 
 ## 运行测试
 
-```powershell
+~~~powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python.exe -m pytest -q
-```
+~~~
 
 GitHub Actions 在 Windows 上执行 CPU-safe 测试。CI 通过不等于 CUDA 推理、真实发丝边缘质量或打包程序已经在你的显卡上通过。
 
 ## 仓库结构
 
-```text
+~~~text
 app/
   core/        图片读写、Alpha 导出和批处理
   engine/      模型适配器（BiRefNet-HR）
@@ -118,9 +114,10 @@ app/
 scripts/       Windows 安装、GPU 检查和打包
 tests/         CPU-safe 回归测试
 docs/          GUI 概念图和合成验证示例
-legacy/        原始白底抠图源码
 models/        模型下载与许可说明（不存储权重）
-```
+~~~
+
+你另行上传的白底 JavaScript 抠图工具已经过代码审阅，但**当前尚未迁移到本仓库，也没有接入桌面运行流程**。后续需要单独迁移源码并审查接口，才能作为可选补充模式。
 
 ## 隐私与安全
 
@@ -133,6 +130,7 @@ models/        模型下载与许可说明（不存储权重）
 ## 尚未完成
 
 - MultiMatte 独立推理适配器尚未完成。
+- 原有白底抠图算法尚未迁移到桌面应用中。
 - 画笔式蒙版修复、前后对比滑块、预设和完整历史记录尚未完成。
 - 需要真实人物照片质量集和 RTX 4070 压力测试。
 - GUI 概念图不是最终运行程序的截图。
@@ -140,4 +138,4 @@ models/        模型下载与许可说明（不存储权重）
 
 ## 许可证
 
-根项目尚未确定统一许可证。原有白底算法目录保留其自身 MIT 许可。第三方依赖、模型代码和模型权重分别适用各自的许可条款。
+本项目根目录尚未选择统一许可证。第三方依赖、模型代码和模型权重分别适用各自的许可条款。未来迁移白底工具代码时，会保留其独立许可证。
