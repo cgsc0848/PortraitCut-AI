@@ -20,17 +20,13 @@
 - Continue after per-image failures and report every item.
 - Keep image processing local. The model is downloaded to the local Hugging Face cache on first use.
 
-## Preview material
+## Visual previews
 
-### Legacy white-background algorithm example
+### Intended transparent PNG composition
 
-**Input:**  
-![Legacy demo input](legacy/white-bg-cutout/examples/demo-input.png)
+![Transparent PNG output concept](docs/transparency-concept.svg)
 
-**Transparent Alpha output:**  
-![Legacy demo output](legacy/white-bg-cutout/examples/demo-input_cutout.png)
-
-*These are the exact synthetic demo assets shipped with the legacy white-background tool. They are not BiRefNet output or a real-person quality benchmark.*
+*Synthetic illustration only. The checkerboard represents transparency; this is not output from the AI model.*
 
 ### Quality validation cases
 
@@ -55,7 +51,7 @@ The BiRefNet-HR-matting upstream model card documents Transformers loading with 
 
 References: [BiRefNet-HR model card](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting) · [Pinned code revision](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting/tree/5d6b6f8adcb5b417c871b1d84ceaae9871355b7f) · [PyTorch installer](https://pytorch.org/get-started/locally/) · [PyTorch wheel matrix](https://pytorch.org/get-started/previous-versions/)
 
-The chosen PyTorch / torchvision pair follows the upstream BiRefNet dependency baseline. Newer versions may work, but should not be substituted silently: run the model smoke test and visual test set before changing the matrix.
+The chosen PyTorch / torchvision pair is a conservative compatibility baseline, not a claim that these are the newest packages. Newer versions may work, but should not be substituted silently: run the model smoke test and visual test set before changing the matrix.
 
 ## Install from source (Windows)
 
@@ -84,7 +80,7 @@ The first model load requires network access to download model files. Once cache
 
 ## Build a self-contained Windows folder
 
-Run scripts/build_windows.ps1. The output is dist/PortraitCutAI/. Keep the complete folder together when distributing. The package bundles Python and Python dependencies; the NVIDIA display driver remains a machine prerequisite. Model weights remain in the user's Hugging Face cache and download on first run.
+Run scripts/build_windows.ps1. The output is dist/PortraitCutAI/. Keep the complete folder together when distributing. The package bundles Python and Python dependencies; the NVIDIA display driver remains a machine prerequisite. Model weights remain in the user's Hugging Face cache and download on first run. Therefore, the current build is **self-contained for application code and Python libraries, but not fully offline on first launch**.
 
 PyInstaller builds are specific to the OS, Python version and architecture. Build on Windows under the intended 64-bit Python version. One-folder mode is used first because it is easier to inspect and debug than a one-file executable.
 
@@ -118,9 +114,10 @@ app/
 scripts/       Windows setup, GPU check and build
 tests/         CPU-safe regression tests
 docs/          concept UI and synthetic evaluation examples
-legacy/        original white-background cutout source
 models/        model download / license notes (weights are not committed)
 ~~~
+
+The separately supplied white-background JavaScript tool has been reviewed, but it is **not yet part of this repository or the desktop runtime**. Its source needs a separate migration and integration review before it can be used as an optional fallback.
 
 ## Privacy and security
 
@@ -133,11 +130,12 @@ models/        model download / license notes (weights are not committed)
 ## Known gaps
 
 - MultiMatte standalone inference adapter is not implemented yet.
+- The original white-background algorithm has not yet been migrated into the desktop application.
 - Brush-based matte editing, before/after slider, presets and full job history are not implemented yet.
 - Real human photo evaluation and RTX 4070 stress measurements are still required.
-- The GUI concept image is not a screenshot of the running application.
+- The GUI concept images are not screenshots of the running application.
 - No signed installer or release build has been published.
 
 ## License
 
-The root project license has not yet been selected. The source under legacy/white-bg-cutout/ retains its own MIT license. Third-party libraries and model code / weights have separate license terms.
+The root project license has not yet been selected. Third-party libraries and model code / weights have separate license terms. The white-background tool's separate source license will be preserved if/when that code is migrated.
