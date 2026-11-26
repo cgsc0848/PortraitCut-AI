@@ -1,6 +1,6 @@
 # Pinned compatibility baseline for the BiRefNet-HR model-code revision.
 # PyTorch / torchvision CUDA wheels are installed first by scripts/install_windows.ps1.
-torch==2.5.1
+torch==2.15.0
 torchvision==0.20.1
 transformers==5.0.0
 huggingface-hub>=1.0.0,<2
