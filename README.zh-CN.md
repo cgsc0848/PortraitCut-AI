@@ -2,145 +2,121 @@
 
 [English](README.md) · **简体中文**
 
-**面向 Windows + NVIDIA 显卡的本地批量人物抠图桌面软件。**
+**面向 Windows 和 NVIDIA 显卡的本地批量人物抠图桌面软件。**
 
-> **当前状态：MVP Alpha。** 这是开发预览版，不是 Photoshop 的完整替代品。CUDA 推理、真实照片边缘质量和打包结果仍需在 Windows + RTX 4070 实机验证。
+> **当前状态：MVP Alpha。** 这是早期开发版本，不是 Photoshop 的完整替代品。CUDA 推理、真实人像的边缘质量和打包运行仍需在 Windows + RTX 4070 实机验证。
 
 ![PortraitCut AI 桌面界面概念图](docs/gui-concept.svg)
 
-*这是 GUI 设计概念图，不是当前运行程序的真实截图。*
+*这是界面概念图，不是当前运行程序的截图。*
 
-## 目标功能
+## 功能
 
-- 导入人物照片文件夹，可选择递归子文件夹。
-- 使用 BiRefNet-HR-matting 本地推理，每次处理一张图片。
-- 优先 NVIDIA CUDA + FP16；发生 CUDA 显存不足时，逐级降低模型输入尺寸重试。
-- 保留原图 RGB，只将模型预测蒙版用作 PNG Alpha 通道。
-- 输出透明 PNG，不覆盖原始文件。
-- 单张失败不会中断整批任务，并记录每张图片的处理结果。
-- 图片处理留在本机；首次使用时将模型下载到本地 Hugging Face 缓存。
+- 从文件夹批量导入图片，可选择递归扫描子文件夹。
+- 使用固定版本的 BiRefNet-HR-matting 模型进行本地人像抠图。
+- 优先使用 NVIDIA CUDA + FP16；显存不足时逐级降低模型输入尺寸重试。
+- 保留原图 RGB，将预测的 Alpha 蒙版合成为透明 PNG。
+- 单张顺序推理，降低显存占用；单张失败不会中断剩余任务。
+- 自动处理输出重名，显示批处理进度。
 
-## 预期效果示意
+## 效果示意
 
-### 透明 PNG 合成概念
+![透明 PNG 目标效果概念图](docs/transparency-concept.svg)
 
-![透明 PNG 结果示意](docs/transparency-concept.svg)
+*合成插画，用于说明透明 PNG 的目标形式，不是 AI 模型实测结果。*
 
-*这是合成插画。棋盘格代表透明区域，不是 AI 模型实测输出。*
+![质量验证场景](docs/quality-validation-cases.svg)
 
-### 质量验证关注点
-
-![抠图质量验证类别](docs/quality-validation-cases.svg)
-
-*这些合成图用于说明后续需要测试的边缘场景：碎发、白衣服对白背景、薄纱/半透明材质。不是模型实测结果。*
+*示意后续需要验证的场景：碎发、浅色背景上的白色衣服、薄纱等半透明材质。这些不是模型实测结果。*
 
 ## 当前兼容版本基线
 
-| 组件 | 项目基线 | 说明 |
-|---|---|---|
-| 操作系统 | Windows 10/11 x64 | 桌面目标平台 |
-| Python | 3.11 x64 | 当前打包基线 |
-| PyTorch | 2.5.1 | 使用 CUDA 12.1 wheel |
-| torchvision | 0.20.1 | 与 PyTorch 2.5.1 配套 |
-| CUDA runtime | 12.1 wheel | 仍需 NVIDIA 驱动；通常不需要另装 CUDA Toolkit |
-| Transformers | 5.0.0（固定版本） | 与固定的 BiRefNet 模型代码兼容修正配套 |
-| huggingface-hub | >=1.0.0,<2 | Transformers 5 的依赖要求 |
-| timm | >=1.0.23 | 上游模型代码依赖 |
-| NumPy | 1.26.4 | 为上游兼容暂时固定在 NumPy 2 以下 |
+| 组件 | 版本 / 目标 |
+|---|---|
+| 操作系统 | Windows 10/11 x64 |
+| Python | 3.11 x64 |
+| PyTorch / torchvision | 2.5.1 / 0.20.1 |
+| CUDA runtime | PyTorch CUDA 12.1 wheel；仍需安装 NVIDIA 驱动 |
+| Transformers | 5.0.0 |
+| huggingface-hub | >=1.0.0,<2 |
+| NumPy | 1.26.4 |
 
-BiRefNet-HR-matting 上游模型卡给出的 Transformers 加载方式使用 trust_remote_code=True。仓库将 Transformers 固定为 5.0.0，并将模型代码固定在 app/engine/birefnet.py 中的 revision：5d6b6f8adcb5b417c871b1d84ceaae9871355b7f，以匹配上游针对 Transformers 5.0 的兼容修复。Transformers 5 要求 huggingface-hub >=1.0.0，详见 requirements-ai.txt。这会执行远程模型仓库中的 Python 代码，首次运行前应审阅对应版本。
+这些版本是当前 BiRefNet 适配器采用的兼容基线，并不表示它们是最新版本。更改环境前请先查看 `requirements*.txt`。
 
-参考资料：[BiRefNet-HR 模型页](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting) · [固定模型代码版本](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting/tree/5d6b6f8adcb5b417c871b1d84ceaae9871355b7f) · [PyTorch 官方安装选择器](https://pytorch.org/get-started/locally/) · [PyTorch 历史版本安装矩阵](https://pytorch.org/get-started/previous-versions/)
+模型适配器通过 `trust_remote_code=True` 加载模型仓库，并固定模型代码 revision：`5d6b6f8adcb5b417c871b1d84ceaae9871355b7f`。这意味着程序会在本机执行该上游版本中的 Python 代码。首次使用前请审阅对应的固定版本。
 
-当前选择的是保守的兼容基线，不代表这些软件包是最新版本。更高版本可能可以运行，但不能未经验证就静默替换；升级后应重新执行模型 smoke test 和质量集。
+参考资料：[BiRefNet-HR 模型页](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting) · [固定模型代码版本](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting/tree/5d6b6f8adcb5b417c871b1d84ceaae9871355b7f) · [PyTorch 官方安装选择器](https://pytorch.org/get-started/locally/)
 
-## Windows 源码安装
+## Windows 安装与启动
 
 1. 安装 64 位 Python 3.11 和较新的 NVIDIA 显卡驱动。
-2. 在仓库根目录打开 PowerShell。
-3. 执行：
+2. 在仓库根目录打开 PowerShell，执行：
 
 ~~~powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\install_windows.ps1
 ~~~
 
-4. 启动桌面程序：
+3. 启动程序：
 
 ~~~powershell
 .\.venv\Scripts\python.exe -m app.main
 ~~~
 
-5. 检查 CUDA runtime 和 GPU 张量运算：
+4. 检查 CUDA 是否可用：
 
 ~~~powershell
 .\.venv\Scripts\python.exe scripts\verify_gpu.py
 ~~~
 
-第一次加载模型需要联网下载文件。模型缓存完成后，推理在本机运行。不要在同一个虚拟环境里再安装第二套 Python / PyTorch。
+首次加载模型需要联网下载模型文件。模型缓存完成后，图片推理在本机运行。
 
-## 构建独立 Windows 运行目录
+## 构建 Windows 独立运行目录
 
-执行 scripts/build_windows.ps1。构建结果位于 dist/PortraitCutAI/，发布或拷贝时要保留整个文件夹。该运行目录包含 Python 解释器和 Python 依赖；目标机器仍需安装 NVIDIA 显卡驱动。模型权重放在用户 Hugging Face 缓存目录，第一次运行时下载。因此，当前版本**应用代码和 Python 库可独立运行，但首次启动仍需联网下载模型，并非完全离线安装包**。
+在 Windows 环境执行 `scripts/build_windows.ps1`。输出目录为 `dist/PortraitCutAI/`，分发时需要保留完整文件夹。应用和 Python 库会被打包，但目标电脑仍需 NVIDIA 驱动，模型文件也会在首次运行时下载。因此当前还不是完全离线安装包。
 
-PyInstaller 构建与操作系统、Python 版本和位数相关，因此应在目标 Windows 环境构建。当前先采用 **onedir** 目录模式，便于排错和检查依赖，不急于压成单个 exe。
+## 批量任务保护
 
-## 批量任务保护与行为
+- 单张图片最大 **5000 万像素**。
+- 单批最多扫描 **10,000 张图片**。
+- 每次只推理一张图片。
+- 不覆盖已存在的输出文件；重名时自动增加后缀。
+- 取消任务会在当前图片处理完成后生效。
+- 这些是软件保护上限，不代表已经测得的性能或吞吐量保证。
 
-- 单张顺序推理，不会为一个批次创建多个模型副本。
-- 单张图片最大 **5000 万像素**。超大图或损坏文件会单独失败并记录。
-- 单批最多扫描 **10,000 张图片**。更大的任务请拆分文件夹。
-- 可选递归扫描子文件夹。
-- 输出保留相对目录结构，统一输出 PNG。不会覆盖已存在文件；重名时自动增加后缀。
-- 默认显存降级顺序：2048 → 1792 → 1536 → 1280 → 1024，实际起点由用户质量设置决定。
-- 取消任务会在当前图片推理完成后停止，不会强行中断正在运行的 CUDA kernel。
-- 这些是软件保护上限，不代表已经测得的吞吐量极限。真正的极限压力测试仍需在目标 Windows 电脑上完成。
-
-## 运行测试
+## 测试
 
 ~~~powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 .\.venv\Scripts\python.exe -m pytest -q
 ~~~
 
-GitHub Actions 在 Windows 上执行 CPU-safe 测试。CI 通过不等于 CUDA 推理、真实发丝边缘质量或打包程序已经在你的显卡上通过。
+CI 测试覆盖的是可在 CPU 环境执行的代码路径。CI 通过不代表 CUDA 性能、所有类型图片的抠图质量或每台电脑上的打包运行都已验证。
 
 ## 仓库结构
 
 ~~~text
-app/
-  core/        图片读写、Alpha 导出和批处理
-  engine/      模型适配器（BiRefNet-HR）
-  ui/          PySide6 桌面界面
-scripts/       Windows 安装、GPU 检查和打包
-tests/         CPU-safe 回归测试
-docs/          GUI 概念图和合成验证示例
-models/        模型下载与许可说明（不存储权重）
+app/          桌面程序、批处理流程和模型适配器
+scripts/      Windows 安装、GPU 检查和打包脚本
+tests/        CPU-safe 回归测试
+docs/         界面与质量验证概念图
+models/       模型下载和许可证说明（不提交模型权重）
 ~~~
 
-你另行上传的白底 JavaScript 抠图工具已经过代码审阅，但**当前尚未迁移到本仓库，也没有接入桌面运行流程**。后续需要单独迁移源码并审查接口，才能作为可选补充模式。
+另行提供的白底 JavaScript 工具目前不在本仓库中，也未接入当前桌面程序。
 
-## 隐私与安全
+## 隐私说明
 
-- 不要提交个人照片、模型缓存、访问令牌、API key、密码或私钥。
-- 公开仓库原则上只放源码与合成示例图片。
-- 建议在 GitHub **Settings → Security & analysis** 中启用 Dependabot alerts、Secret scanning、Push protection 和 CodeQL（按账号方案可用性）。
-- 仅搜索当前文件不等于扫描完整 Git 历史。如果曾经提交过真实密钥，即使后来删除，也必须先轮换凭据。
-- 参见 [SECURITY.md](SECURITY.md)。
+PortraitCut AI 在用户自己的设备上执行图片推理。当前应用代码没有实现图片上传服务或远程推理接口。首次使用时，程序会连接 Hugging Face 下载模型文件；下载后模型文件缓存在本机。
 
-## 尚未完成
+模型适配器会在本机执行固定版本的上游模型代码。处理敏感素材前，请先审阅模型版本及第三方依赖。
 
-- MultiMatte 独立推理适配器尚未完成。
-- 原有白底抠图算法尚未迁移到桌面应用中。
-- 画笔式蒙版修复、前后对比滑块、预设和完整历史记录尚未完成。
-- 需要真实人物照片质量集和 RTX 4070 压力测试。
-- GUI 概念图不是最终运行程序的截图。
-- 尚未发布签名安装包或正式 Release。
+## 安全问题报告
+
+请勿在公开 Issue 中发布访问令牌、私人图片或其他敏感内容。漏洞报告方式请参见 [SECURITY.md](SECURITY.md)；仓库维护规范请参见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 开源许可证
 
-PortraitCut AI **原创项目代码采用 Apache License 2.0（Apache-2.0）**，详见 [LICENSE](LICENSE)。它允许个人和企业使用、修改、分发及商业集成，但需遵守许可证中的版权声明、NOTICE（如适用）和专利条款。
+PortraitCut AI **原创项目代码采用 Apache License 2.0（Apache-2.0）**，详见 [LICENSE](LICENSE)。第三方模型代码、模型权重、Python 软件包和 Qt 组件分别保留各自的许可证，详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
-该许可证不会覆盖第三方组件。尤其是 BiRefNet-HR-matting 模型仓库声明采用 MIT；PySide6 / Qt for Python 则提供 LGPLv3/GPLv3 或 Qt 商业许可选项。请阅读 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 和上游许可证。**在分发 PyInstaller 打包版本前，必须针对实际使用的 Qt 模块满足许可证、源码/通知及可替换/重新链接等要求**；当前打包脚本还不是已完成许可证合规审查的正式安装包。
-
-另行提供的白底 JavaScript 工具尚未迁入本仓库，不受本 LICENSE 覆盖；未来迁移时必须保留并审查其原始许可证。
+当前 PyInstaller 脚本仅用于开发打包，还不是完成第三方许可证合规审查的正式发布包。分发二进制文件前，需核对实际使用的 Qt 模块及其分发义务。另行提供的白底 JavaScript 工具不在本仓库中，也不受本项目许可证覆盖。

@@ -20,6 +20,24 @@ license inventory for the exact lockfile/build environment.
 - Upstream authors: Zheng Peng and BiRefNet contributors. Please cite the BiRefNet
   paper as requested by the upstream project.
 
+## BiRefNet source code and foreground refinement
+
+- Source: [ZhengPeng7/BiRefNet image_proc.py](https://github.com/ZhengPeng7/BiRefNet/blob/main/image_proc.py)
+- The BiRefNet source repository declares the MIT License. The application’s
+  `refine_foreground_rgb` helper is adapted from the CPU foreground-colour
+  refinement implementation in that file.
+- Copyright notice from the upstream source: Copyright (c) 2024 ZhengPeng.
+- The BiRefNet implementation credits PhotoRoom's
+  [fast-foreground-estimation project](https://github.com/PhotoRoom/fast-foreground-estimation)
+  and Marco Forte's paper, *Approximate Fast Foreground Colour Estimation*,
+  ICIP 2021, DOI: [10.1109/ICIP42928.2021.9506164](https://doi.org/10.1109/ICIP42928.2021.9506164).
+- The PhotoRoom GitHub repository currently has no declared repository license
+  or LICENSE file in its default-branch tree. This project attributes the
+  research/source reference through the BiRefNet implementation; it does not
+  claim a separate license grant from PhotoRoom. Do not copy additional code
+  directly from the PhotoRoom repository unless permission or an applicable
+  license is confirmed.
+
 ## PySide6 / Qt for Python
 
 - Project: [Qt for Python](https://doc.qt.io/qtforpython-6/)
