@@ -47,7 +47,7 @@
 | timm | >=1.0.23 | Required by upstream model code |
 | NumPy | 1.26.4 | Kept below NumPy 2 for upstream compatibility |
 
-The BiRefNet-HR-matting upstream model card documents Transformers loading with trust_remote_code=True; the fixed model revision in app/engine/birefnet.py is 5d6b6f8adcb5b417c871b1d84ceaae9871355b7f. Remote model code is executable Python. Review it before first use.
+The BiRefNet-HR-matting model card documents Transformers loading with trust_remote_code=True. This project pins Transformers 5.0.0 and model-code revision 5d6b6f8adcb5b417c871b1d84ceaae9871355b7f to match the upstream Transformers 5.0 compatibility fix. Transformers 5 requires huggingface-hub >=1.0.0; see requirements-ai.txt. Remote model code is executable Python. Review it before first use.
 
 References: [BiRefNet-HR model card](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting) · [Pinned code revision](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting/tree/5d6b6f8adcb5b417c871b1d84ceaae9871355b7f) · [PyTorch installer](https://pytorch.org/get-started/locally/) · [PyTorch wheel matrix](https://pytorch.org/get-started/previous-versions/)
 
