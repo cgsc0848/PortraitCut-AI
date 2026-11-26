@@ -139,4 +139,8 @@ The separately supplied white-background JavaScript tool has been reviewed, but 
 
 ## License
 
-The root project license has not yet been selected. Third-party libraries and model code / weights have separate license terms. The white-background tool's separate source license will be preserved if/when that code is migrated.
+Original PortraitCut AI project code is licensed under the **Apache License 2.0**; see [LICENSE](LICENSE). This permits commercial use, modification and redistribution subject to its conditions, including preservation of notices and the patent terms.
+
+The project license does not relicense third-party components. In particular, the BiRefNet-HR-matting model repository declares MIT, while PySide6 / Qt for Python is offered under LGPLv3/GPLv3 or a Qt commercial license. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the upstream license documents. Before redistributing a PyInstaller build, satisfy the exact Qt modules' license and relinking/source-notice requirements; the current build script is not yet a compliance-ready installer.
+
+The separately supplied white-background JavaScript utility is not in this repository and is not covered by this LICENSE. Its original license must be preserved if it is migrated.
