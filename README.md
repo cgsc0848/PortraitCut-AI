@@ -30,7 +30,7 @@
 
 ### Quality validation cases
 
-![Quality validation cases](docs/quality-validation-cases.png)
+![Quality validation cases](docs/quality-validation-cases.svg)
 
 *Synthetic illustrations showing edge cases to validate: flyaway hair, white clothing against a light background, and sheer fabric. These are evaluation categories, not measured AI results.*
 
