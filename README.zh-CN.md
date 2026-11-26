@@ -113,7 +113,7 @@ PortraitCut AI 在用户自己的设备上执行图片推理。当前应用代�
 
 ## 安全问题报告
 
-请勿在公开 Issue 中发布访问令牌、私人图片或其他敏感内容。漏洞报告方式请参见 [SECURITY.md](SECURITY.md)。
+请勿在公开 Issue 中发布访问令牌、私人图片或其他敏感内容。漏洞报告方式请参见 [SECURITY.md](SECURITY.md)；仓库维护规范请参见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 开源许可证
 
