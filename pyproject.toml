@@ -1,6 +1,13 @@
+[project]
+name = "portraitcut-ai"
+version = "0.1.0"
+description = "Local-first Windows batch portrait cutout desktop application"
+requires-python = ">=3.11,<3.12"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+addopts = "-ra"
 
 [tool.ruff]
 line-length = 100
