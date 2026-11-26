@@ -164,7 +164,7 @@ class MainWindow(QMainWindow):
         queue_group = QGroupBox("批量任务")
         queue_layout = QVBoxLayout(queue_group)
         self.queue_table = QTableWidget(0, 4)
-        self.queue_table.setHorizontalHeaderLabels(["文件名", "状态", "实际尺寸", "结果信息"])
+        self.queue_table.setHorizontalHeaderLabels(["文件名", "状态", "模型尺寸", "结果信息"])
         modes = (
             QHeaderView.ResizeMode.Stretch,
             QHeaderView.ResizeMode.ResizeToContents,
