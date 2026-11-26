@@ -300,6 +300,9 @@ class MainWindow(QMainWindow):
         row = self._table_rows.get(str(result.source))
         if row is not None:
             self.queue_table.item(row, 1).setText("完成" if result.success else "失败")
+            detected = next((f"{value}px" for value in (2048, 1792, 1536, 1280, 1024)
+                             if f"{value}px" in result.message), "—")
+            self.queue_table.item(row, 2).setText(detected)
             self.queue_table.item(row, 3).setText(result.message)
 
     def on_completed(self, report: BatchReport):
