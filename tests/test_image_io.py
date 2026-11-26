@@ -13,6 +13,26 @@ def test_discover_supported_images(tmp_path: Path):
     assert [p.name for p in found] == ["a.jpg", "c.PNG"]
 
 
+def test_discover_images_stops_at_safety_limit(tmp_path: Path):
+    for name in ("a.png", "b.jpg", "c.webp", "d.tif"):
+        (tmp_path / name).write_bytes(b"placeholder")
+    with pytest.raises(ValueError, match="more than 3 images"):
+        discover_images(tmp_path, max_files=3)
+
+
+def test_discover_images_supports_exact_limit_and_recursive(tmp_path: Path):
+    nested = tmp_path / "nested"
+    nested.mkdir()
+    (tmp_path / "a.png").write_bytes(b"placeholder")
+    (nested / "b.png").write_bytes(b"placeholder")
+    assert len(discover_images(tmp_path, recursive=True, max_files=2)) == 2
+
+
+def test_discover_images_rejects_non_positive_limit(tmp_path: Path):
+    with pytest.raises(ValueError, match="at least 1"):
+        discover_images(tmp_path, max_files=0)
+
+
 def test_save_rgba_preserves_rgb_and_alpha_size(tmp_path: Path):
     rgb = Image.new("RGB", (20, 10), (120, 30, 10))
     alpha = Image.new("L", (10, 5), 128)
