@@ -34,6 +34,7 @@ def run_batch(
     output_dir: Path,
     engine: MatteEngine,
     recursive: bool = False,
+    refine_rgb: bool = False,
     progress: Callable[[int, int, FileResult], None] | None = None,
 ) -> BatchReport:
     input_dir = Path(input_dir).expanduser()
@@ -49,13 +50,18 @@ def run_batch(
         try:
             rgb = load_rgb(source)
             prediction = engine.predict(rgb)
+            final_rgb = rgb
+            if refine_rgb:
+                from app.engine.birefnet import refine_foreground_rgb
+                final_rgb = refine_foreground_rgb(rgb, prediction.alpha)
+
             relative = source.resolve().relative_to(input_resolved)
             output = (output_dir / relative).with_suffix(".png")
             if output.exists():
                 output = output.with_name(
                     f"{source.stem}__{source.suffix.lstrip('.').lower()}.png"
                 )
-            save_rgba(rgb, prediction.alpha, output)
+            save_rgba(final_rgb, prediction.alpha, output)
             message = prediction.warning or (
                 f"{prediction.model_name} @ {prediction.used_resolution}px"
             )
