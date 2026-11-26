@@ -1,4 +1,5 @@
 from pathlib import Path
+from threading import Event
 from PIL import Image
 
 from app.core.batch import run_batch
@@ -33,3 +34,15 @@ def test_batch_rejects_output_inside_input(tmp_path: Path):
         assert "Output directory" in str(exc)
     else:
         raise AssertionError("Expected output directory validation to fail")
+
+
+def test_batch_can_cancel_before_next_item(tmp_path: Path):
+    source = tmp_path / "input"
+    output = tmp_path / "output"
+    source.mkdir()
+    Image.new("RGB", (8, 8), "red").save(source / "a.png")
+    cancel = Event()
+    cancel.set()
+    report = run_batch(source, output, DummyEngine(), cancel_event=cancel)
+    assert report.cancelled is True
+    assert report.total == 0
