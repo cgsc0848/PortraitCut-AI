@@ -47,7 +47,7 @@
 | timm | >=1.0.23 | 上游模型代码依赖 |
 | NumPy | 1.26.4 | 为上游兼容暂时固定在 NumPy 2 以下 |
 
-BiRefNet-HR-matting 上游模型卡给出的 Transformers 加载方式使用 trust_remote_code=True。仓库将模型代码固定在 app/engine/birefnet.py 中的 revision：5d6b6f8adcb5b417c871b1d84ceaae9871355b7f。这会执行远程模型仓库中的 Python 代码，首次运行前应审阅对应版本。
+BiRefNet-HR-matting 上游模型卡给出的 Transformers 加载方式使用 trust_remote_code=True。仓库将 Transformers 固定为 5.0.0，并将模型代码固定在 app/engine/birefnet.py 中的 revision：5d6b6f8adcb5b417c871b1d84ceaae9871355b7f，以匹配上游针对 Transformers 5.0 的兼容修复。Transformers 5 要求 huggingface-hub >=1.0.0，详见 requirements-ai.txt。这会执行远程模型仓库中的 Python 代码，首次运行前应审阅对应版本。
 
 参考资料：[BiRefNet-HR 模型页](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting) · [固定模型代码版本](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting/tree/5d6b6f8adcb5b417c871b1d84ceaae9871355b7f) · [PyTorch 官方安装选择器](https://pytorch.org/get-started/locally/) · [PyTorch 历史版本安装矩阵](https://pytorch.org/get-started/previous-versions/)
 
