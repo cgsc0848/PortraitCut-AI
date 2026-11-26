@@ -2,99 +2,87 @@
 
 [**English**](README.md) · [简体中文](README.zh-CN.md)
 
-**Local-first Windows desktop app for batch portrait cutout with NVIDIA GPU acceleration.**
+**A local-first Windows desktop application for batch portrait cutout with NVIDIA GPU acceleration.**
 
-> **Status: MVP Alpha.** This is a developer preview, not a finished Photoshop replacement. CUDA runtime, visual quality and packaging still need validation on a physical Windows + RTX 4070 machine.
+> **Status: MVP Alpha.** This is an early developer release, not a Photoshop replacement. CUDA inference, output quality on real portraits, and packaged execution still require validation on a physical Windows + RTX 4070 system.
 
 ![PortraitCut AI desktop concept](docs/gui-concept.svg)
 
-*GUI concept only — a design preview, not a screenshot of the running application.*
+*Interface concept only — not a screenshot of the running application.*
 
-## What it is designed to do
+## Features
 
-- Import a folder of portraits (optionally include subfolders).
-- Run BiRefNet-HR-matting locally, one image at a time.
-- Prefer NVIDIA CUDA + FP16; retry lower model input sizes after CUDA out-of-memory errors.
-- Preserve source RGB and use the predicted matte as the PNG alpha channel.
-- Export transparent PNGs without overwriting original files.
-- Continue after per-image failures and report every item.
-- Keep image processing local. The model is downloaded to the local Hugging Face cache on first use.
+- Batch import from folders, with optional recursive scanning.
+- Local portrait matting with the pinned BiRefNet-HR-matting model.
+- NVIDIA CUDA + FP16 preference, with lower-resolution retries after GPU out-of-memory errors.
+- Transparent PNG export using the source image RGB and the predicted alpha matte.
+- Sequential inference to limit VRAM use; per-file failures do not stop the remaining batch.
+- Collision-safe output naming and progress reporting.
 
-## Visual previews
+## Preview
 
-### Intended transparent PNG composition
+![Transparent PNG target concept](docs/transparency-concept.svg)
 
-![Transparent PNG output concept](docs/transparency-concept.svg)
-
-*Synthetic illustration only. The checkerboard represents transparency; this is not output from the AI model.*
-
-### Quality validation cases
+*Synthetic illustration showing the intended transparent-PNG composition; not an AI inference result.*
 
 ![Quality validation cases](docs/quality-validation-cases.svg)
 
-*Synthetic illustrations showing edge cases to validate: flyaway hair, white clothing against a light background, and sheer fabric. These are evaluation categories, not measured AI results.*
+*Illustrative test categories: fine hair, white clothing on a light background, and sheer fabric. These are not measured model results.*
 
-## Current compatibility baseline
+## Compatibility baseline
 
-| Component | Project baseline | Notes |
-|---|---|---|
-| OS | Windows 10/11 x64 | Desktop target |
-| Python | 3.11 x64 | Packaging baseline |
-| PyTorch | 2.5.1 | CUDA 12.1 wheel |
-| torchvision | 0.20.1 | Matched to PyTorch 2.5.1 |
-| CUDA runtime | 12.1 wheel | NVIDIA driver required; separate CUDA Toolkit normally not needed |
-| Transformers | 5.0.0 (pinned) | Matches the pinned BiRefNet model-code compatibility fix |
-| huggingface-hub | >=1.0.0,<2 | Required by Transformers 5 |
-| timm | >=1.0.23 | Required by upstream model code |
-| NumPy | 1.26.4 | Kept below NumPy 2 for upstream compatibility |
+| Component | Version / target |
+|---|---|
+| OS | Windows 10/11 x64 |
+| Python | 3.11 x64 |
+| PyTorch / torchvision | 2.5.1 / 0.20.1 |
+| CUDA runtime | 12.1 PyTorch wheel; NVIDIA driver required |
+| Transformers | 5.0.0 |
+| huggingface-hub | >=1.0.0,<2 |
+| NumPy | 1.26.4 |
 
-The BiRefNet-HR-matting model card documents Transformers loading with trust_remote_code=True. This project pins Transformers 5.0.0 and model-code revision 5d6b6f8adcb5b417c871b1d84ceaae9871355b7f to match the upstream Transformers 5.0 compatibility fix. Transformers 5 requires huggingface-hub >=1.0.0; see requirements-ai.txt. Remote model code is executable Python. Review it before first use.
+These are pinned compatibility choices for the current BiRefNet adapter, not a statement that they are the latest available versions. See `requirements*.txt` before changing the environment.
 
-References: [BiRefNet-HR model card](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting) · [Pinned code revision](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting/tree/5d6b6f8adcb5b417c871b1d84ceaae9871355b7f) · [PyTorch installer](https://pytorch.org/get-started/locally/) · [PyTorch wheel matrix](https://pytorch.org/get-started/previous-versions/)
+The adapter loads the model repository with `trust_remote_code=True` and pins model-code revision `5d6b6f8adcb5b417c871b1d84ceaae9871355b7f`. This means Python code from that upstream model revision is executed locally. Review the pinned upstream code before first use.
 
-The chosen PyTorch / torchvision pair is a conservative compatibility baseline, not a claim that these are the newest packages. Newer versions may work, but should not be substituted silently: run the model smoke test and visual test set before changing the matrix.
+References: [BiRefNet-HR model card](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting) · [Pinned model-code revision](https://huggingface.co/ZhengPeng7/BiRefNet_HR-matting/tree/5d6b6f8adcb5b417c871b1d84ceaae9871355b7f) · [PyTorch installation selector](https://pytorch.org/get-started/locally/)
 
-## Install from source (Windows)
+## Install and run (Windows)
 
 1. Install 64-bit Python 3.11 and a current NVIDIA driver.
-2. Open PowerShell in the repository root.
-3. Run:
+2. Open PowerShell in the repository root and run:
 
 ~~~powershell
 Set-ExecutionPolicy -Scope Process Bypass
 .\scripts\install_windows.ps1
 ~~~
 
-4. Start the desktop app:
+3. Launch the application:
 
 ~~~powershell
 .\.venv\Scripts\python.exe -m app.main
 ~~~
 
-5. Verify CUDA:
+4. Check CUDA availability:
 
 ~~~powershell
 .\.venv\Scripts\python.exe scripts\verify_gpu.py
 ~~~
 
-The first model load requires network access to download model files. Once cached, inference is local. Do not install a second Python / PyTorch stack into the same environment.
+The first model load requires an internet connection to download model files. After they are cached, image inference runs locally.
 
-## Build a self-contained Windows folder
+## Build a Windows application folder
 
-Run scripts/build_windows.ps1. The output is dist/PortraitCutAI/. Keep the complete folder together when distributing. The package bundles Python and Python dependencies; the NVIDIA display driver remains a machine prerequisite. Model weights remain in the user's Hugging Face cache and download on first run. Therefore, the current build is **self-contained for application code and Python libraries, but not fully offline on first launch**.
+Run `scripts/build_windows.ps1` on Windows. The output is `dist/PortraitCutAI/`; keep the full folder together. The application and Python libraries are bundled, but the NVIDIA driver remains a system prerequisite and model files are downloaded on first use. This is not yet a fully offline installer.
 
-PyInstaller builds are specific to the OS, Python version and architecture. Build on Windows under the intended 64-bit Python version. One-folder mode is used first because it is easier to inspect and debug than a one-file executable.
+## Batch safeguards
 
-## Batch safety limits and behavior
-
-- Inference is sequential (one image at a time); no concurrent model copies are created for a batch.
-- Maximum input size: **50 megapixels per image**. Oversized or malformed files fail individually and are reported.
-- Maximum discovered batch size: **10,000 images**. Split larger jobs into smaller folders.
-- Recursive folder scanning is optional.
-- Output keeps relative subfolder paths and uses PNG. Existing outputs are not overwritten; a suffix is added on collision.
-- CUDA OOM retry order defaults to 2048 → 1792 → 1536 → 1280 → 1024 according to the selected starting quality.
-- Cancel stops after the current image's inference returns; it does not interrupt a CUDA kernel mid-operation.
-- These are protective software limits, not a measured throughput ceiling. A real maximum-batch stress test requires the target Windows machine.
+- Maximum image size: **50 megapixels** per file.
+- Maximum discovered batch size: **10,000 images**.
+- Inference is sequential, one image at a time.
+- Existing output files are not overwritten; a suffix is added when names collide.
+- Cancellation takes effect after the current image finishes.
+- These are protective limits, not measured performance or throughput guarantees.
 
 ## Tests
 
@@ -103,44 +91,32 @@ PyInstaller builds are specific to the OS, Python version and architecture. Buil
 .\.venv\Scripts\python.exe -m pytest -q
 ~~~
 
-GitHub Actions runs CPU-safe Windows tests. Passing CI does not establish that CUDA inference, visual edge quality or packaged execution works on your GPU.
+CI tests cover CPU-safe code paths. Passing CI does not prove CUDA performance, visual quality on all image types, or packaged application behavior on every PC.
 
-## Repository structure
+## Repository layout
 
 ~~~text
-app/
-  core/        image IO, alpha export and batch orchestration
-  engine/      model adapters (BiRefNet-HR)
-  ui/          PySide6 desktop interface
-scripts/       Windows setup, GPU check and build
-tests/         CPU-safe regression tests
-docs/          concept UI and synthetic evaluation examples
-models/        model download / license notes (weights are not committed)
+app/          Desktop application, batch pipeline and model adapter
+scripts/      Windows setup, GPU verification and packaging
+tests/        CPU-safe regression tests
+docs/         Interface and quality-test concept illustrations
+models/       Model download and license notes (weights are not committed)
 ~~~
 
-The separately supplied white-background JavaScript tool has been reviewed, but it is **not yet part of this repository or the desktop runtime**. Its source needs a separate migration and integration review before it can be used as an optional fallback.
+The separately supplied white-background JavaScript utility is not part of this repository or the current application.
 
-## Privacy and security
+## Privacy
 
-- Never commit personal images, model caches, tokens, API keys, passwords or private keys.
-- The public repository should contain source code and synthetic demo assets only.
-- Enable Dependabot alerts, secret scanning, push protection and CodeQL in **Settings → Security & analysis** where available.
-- A current-file search is not a substitute for scanning all historical Git objects. Rotate any credential that may have been committed, even if a later commit deleted it.
-- See [SECURITY.md](SECURITY.md).
+PortraitCut AI performs image inference on the user's device. The application code does not implement an image-upload service or remote inference endpoint. On first use, the application contacts Hugging Face to obtain the model files; those files are then cached locally.
 
-## Known gaps
+The model adapter executes the pinned upstream model code locally. Review the model revision and third-party dependencies before using the application with sensitive material.
 
-- MultiMatte standalone inference adapter is not implemented yet.
-- The original white-background algorithm has not yet been migrated into the desktop application.
-- Brush-based matte editing, before/after slider, presets and full job history are not implemented yet.
-- Real human photo evaluation and RTX 4070 stress measurements are still required.
-- The GUI concept images are not screenshots of the running application.
-- No signed installer or release build has been published.
+## Security reports
+
+Please do not post credentials, private images, or other sensitive material in public issues. See [SECURITY.md](SECURITY.md) for vulnerability-reporting guidance.
 
 ## License
 
-Original PortraitCut AI project code is licensed under the **Apache License 2.0**; see [LICENSE](LICENSE). This permits commercial use, modification and redistribution subject to its conditions, including preservation of notices and the patent terms.
+Original PortraitCut AI project code is licensed under the **Apache License 2.0**; see [LICENSE](LICENSE). Third-party model code, model weights, Python packages and Qt components retain their own licenses. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-The project license does not relicense third-party components. In particular, the BiRefNet-HR-matting model repository declares MIT, while PySide6 / Qt for Python is offered under LGPLv3/GPLv3 or a Qt commercial license. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the upstream license documents. Before redistributing a PyInstaller build, satisfy the exact Qt modules' license and relinking/source-notice requirements; the current build script is not yet a compliance-ready installer.
-
-The separately supplied white-background JavaScript utility is not in this repository and is not covered by this LICENSE. Its original license must be preserved if it is migrated.
+The current PyInstaller script is a development packaging baseline, not a completed third-party license-compliance package. Review the exact Qt modules and redistribution obligations before distributing binaries. The separate white-background JavaScript utility is not included and is not covered by this repository's license.
