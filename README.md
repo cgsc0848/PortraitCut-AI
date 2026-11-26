@@ -113,7 +113,7 @@ The model adapter executes the pinned upstream model code locally. Review the mo
 
 ## Security reports
 
-Please do not post credentials, private images, or other sensitive material in public issues. See [SECURITY.md](SECURITY.md) for vulnerability-reporting guidance.
+Please do not post credentials, private images, or other sensitive material in public issues. See [SECURITY.md](SECURITY.md) for vulnerability-reporting guidance and [CONTRIBUTING.md](CONTRIBUTING.md) for maintainer practices.
 
 ## License
 
