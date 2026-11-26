@@ -43,7 +43,7 @@
 | PyTorch | 2.5.1 | 使用 CUDA 12.1 wheel |
 | torchvision | 0.20.1 | 与 PyTorch 2.5.1 配套 |
 | CUDA runtime | 12.1 wheel | 仍需 NVIDIA 驱动；通常不需要另装 CUDA Toolkit |
-| Transformers | 5.x（>=5.0,<6） | 固定模型代码包含 Transformers 5.0 兼容修正 |
+| Transformers | 5.0.0（固定版本） | 与固定的 BiRefNet 模型代码兼容修正配套 |
 | timm | >=1.0.23 | 上游模型代码依赖 |
 | NumPy | 1.26.4 | 为上游兼容暂时固定在 NumPy 2 以下 |
 
