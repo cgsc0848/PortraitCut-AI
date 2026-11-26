@@ -43,7 +43,7 @@
 | PyTorch | 2.5.1 | CUDA 12.1 wheel |
 | torchvision | 0.20.1 | Matched to PyTorch 2.5.1 |
 | CUDA runtime | 12.1 wheel | NVIDIA driver required; separate CUDA Toolkit normally not needed |
-| Transformers | 5.x (>=5.0,<6) | Fixed model-code revision includes a Transformers 5.0 compatibility update |
+| Transformers | 5.0.0 (pinned) | Matches the pinned BiRefNet model-code compatibility fix |
 | timm | >=1.0.23 | Required by upstream model code |
 | NumPy | 1.26.4 | Kept below NumPy 2 for upstream compatibility |
 
