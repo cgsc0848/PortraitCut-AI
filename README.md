@@ -24,9 +24,13 @@
 
 ### Legacy white-background algorithm example
 
-![Synthetic white-background cutout example](docs/legacy-demo-before-after.svg)
+**Input:**  
+![Legacy demo input](legacy/white-bg-cutout/examples/demo-input.png)
 
-*The supplied legacy demo's synthetic illustration processed by its white-background algorithm. It is not output from BiRefNet or a real-person quality benchmark.*
+**Transparent Alpha output:**  
+![Legacy demo output](legacy/white-bg-cutout/examples/demo-input_cutout.png)
+
+*These are the exact synthetic demo assets shipped with the legacy white-background tool. They are not BiRefNet output or a real-person quality benchmark.*
 
 ### Quality validation cases
 
