@@ -4,8 +4,8 @@ if (-not (Test-Path ".\.venv\Scripts\python.exe")) {
     throw "Virtual environment missing. Run scripts\install_windows.ps1 first."
 }
 
-& ".\.venv\Scripts\python.exe" -m pip install "pyinstaller>=6.22,<7"
-if ($LASTEXITCODE -ne 0) { throw "Could not install PyInstaller." }
+& ".\.venv\Scripts\python.exe" -m pip install -r requirements-build.txt
+if ($LASTEXITCODE -ne 0) { throw "Could not install build dependencies." }
 
 $PyInstallerArgs = @(
     "--clean", "--noconfirm", "--onedir", "--windowed",
