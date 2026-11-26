@@ -2,7 +2,7 @@
 
 Local-first Windows desktop software for batch portrait background removal using NVIDIA GPU acceleration.
 
-**Status: MVP Alpha.** The desktop UI, batch pipeline, RGBA PNG export, and pinned BiRefNet-HR adapter are under active development. CUDA performance and visual quality still require validation on a Windows NVIDIA machine.
+**Status: MVP Alpha.** The desktop UI, batch pipeline, RGBA PNG export, and pinned BiRefNet-HR adapter are in the repository. CUDA performance and visual quality still require validation on a physical Windows NVIDIA machine.
 
 ## Features
 
@@ -12,18 +12,17 @@ Local-first Windows desktop software for batch portrait background removal using
 - JPG, JPEG, PNG, WebP, BMP, and TIFF input
 - Transparent RGBA PNG output while preserving source RGB
 - Per-file error isolation
-- Legacy white-background algorithm retained under `legacy/white-bg-cutout`
+- Optional edge-color decontamination
 
 ## Windows setup
 
 1. Install 64-bit Python 3.11.
 2. Run `scripts\\install_windows.ps1` in PowerShell.
 3. Install the PyTorch CUDA wheel matching your NVIDIA driver from https://pytorch.org/get-started/locally/
-4. Activate the environment and install AI dependencies:
+4. Install AI dependencies and launch:
    ```powershell
-   .\\.venv\\Scripts\\Activate.ps1
-   python -m pip install -r requirements-ai.txt
-   python -m app.main
+   .\\.venv\\Scripts\\python.exe -m pip install -r requirements-ai.txt
+   .\\.venv\\Scripts\\python.exe -m app.main
    ```
 
 Chinese documentation: [README.zh-CN.md](README.zh-CN.md).
@@ -46,9 +45,10 @@ CI tests do not replace CUDA and visual-quality tests on a physical NVIDIA GPU.
 
 - MultiMatte is not yet integrated as a standalone inference backend.
 - Brush-based manual matte editing and a full before/after preview are not implemented yet.
+- The original white-background cutout source has not yet been migrated into this repository.
 - No Windows installer has been released.
 - Photoshop-level results are not guaranteed; challenging hair, translucent fabric, and low-contrast clothing need dataset-based evaluation.
 
 ## License
 
-No root project license has been selected. The legacy white-background component retains its own upstream license. Third-party dependencies and model weights have separate license terms.
+No root project license has been selected. Third-party dependencies and model weights have separate license terms.
