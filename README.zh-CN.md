@@ -137,6 +137,10 @@ models/        模型下载与许可说明（不存储权重）
 - GUI 概念图不是最终运行程序的截图。
 - 尚未发布签名安装包或正式 Release。
 
-## 许可证
+## 开源许可证
 
-本项目根目录尚未选择统一许可证。第三方依赖、模型代码和模型权重分别适用各自的许可条款。未来迁移白底工具代码时，会保留其独立许可证。
+PortraitCut AI **原创项目代码采用 Apache License 2.0（Apache-2.0）**，详见 [LICENSE](LICENSE)。它允许个人和企业使用、修改、分发及商业集成，但需遵守许可证中的版权声明、NOTICE（如适用）和专利条款。
+
+该许可证不会覆盖第三方组件。尤其是 BiRefNet-HR-matting 模型仓库声明采用 MIT；PySide6 / Qt for Python 则提供 LGPLv3/GPLv3 或 Qt 商业许可选项。请阅读 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) 和上游许可证。**在分发 PyInstaller 打包版本前，必须针对实际使用的 Qt 模块满足许可证、源码/通知及可替换/重新链接等要求**；当前打包脚本还不是已完成许可证合规审查的正式安装包。
+
+另行提供的白底 JavaScript 工具尚未迁入本仓库，不受本 LICENSE 覆盖；未来迁移时必须保留并审查其原始许可证。
