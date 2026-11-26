@@ -24,9 +24,13 @@
 
 ### 原白底算法示例
 
-![合成白底人物示例](docs/legacy-demo-before-after.svg)
+**输入图：**  
+![原白底工具输入示例](legacy/white-bg-cutout/examples/demo-input.png)
 
-*这是原白底算法目录自带的合成插画示例，展示旧算法的透明 PNG 输出；不是 BiRefNet 结果，也不代表真实人物照片的抠图质量。*
+**透明 Alpha 输出：**  
+![原白底工具输出示例](legacy/white-bg-cutout/examples/demo-input_cutout.png)
+
+*这是仓库原白底工具附带的合成示例输入和实际透明 PNG 输出；不是 BiRefNet 结果，也不代表真实人物照片的抠图质量。*
 
 ### 质量验证关注点
 
