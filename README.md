@@ -6,7 +6,7 @@
 
 > **Status: MVP Alpha.** This is a developer preview, not a finished Photoshop replacement. CUDA runtime, visual quality and packaging still need validation on a physical Windows + RTX 4070 machine.
 
-![PortraitCut AI desktop concept](docs/gui-concept.png)
+![PortraitCut AI desktop concept](docs/gui-concept.svg)
 
 *GUI concept only — a design preview, not a screenshot of the running application.*
 
