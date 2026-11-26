@@ -1,0 +1,13 @@
+# Install a CUDA-enabled PyTorch wheel separately from https://pytorch.org/get-started/locally/
+torch
+torchvision
+transformers>=4.45,<5
+huggingface_hub>=0.27
+safetensors>=0.4
+timm
+scipy
+scikit-image
+kornia
+einops
+accelerate
+opencv-python-headless>=4.10
