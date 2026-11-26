@@ -1,3 +1,4 @@
+# Python
 .venv/
 venv/
 __pycache__/
@@ -10,11 +11,36 @@ htmlcov/
 build/
 dist/
 *.spec
+*.egg-info/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+secrets.*
+credentials.*
+token.*
+
+# Models, Hugging Face cache and user content
 models/*
 !models/README.md
+.cache/
+.huggingface/
+hf_cache/
 output/
+input/
 logs/
+*.log
+*.sqlite
+*.db
+
+# Editors and OS files
 .idea/
 .vscode/
 .DS_Store
 Thumbs.db
+desktop.ini

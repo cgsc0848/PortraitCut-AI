@@ -1,13 +1,14 @@
-# Install a CUDA-enabled PyTorch wheel separately from https://pytorch.org/get-started/locally/
-torch
-torchvision
-transformers>=4.45,<5
-huggingface_hub>=0.27
+# Pinned compatibility baseline for the BiRefNet-HR model-code revision.
+# PyTorch / torchvision CUDA wheels are installed first by scripts/install_windows.ps1.
+torch==2.5.1
+torchvision==0.20.1
+transformers==5.0.0
+huggingface-hub>=1.0.0,<2
 safetensors>=0.4
-timm
-scipy
-scikit-image
-kornia
-einops
-accelerate
-opencv-python-headless>=4.10
+timm>=1.0.23,<2
+opencv-python-headless>=4.10,<4.12
+scipy>=1.11
+scikit-image>=0.22
+kornia>=0.7
+einops>=0.8
+accelerate>=1.2

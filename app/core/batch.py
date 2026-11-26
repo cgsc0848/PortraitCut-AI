@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from threading import Event
 from typing import Callable
 
 from app.core.image_io import discover_images, load_rgb, save_rgba
@@ -19,6 +20,7 @@ class FileResult:
 @dataclass
 class BatchReport:
     results: list[FileResult]
+    cancelled: bool = False
 
     @property
     def succeeded(self) -> int:
@@ -28,6 +30,10 @@ class BatchReport:
     def failed(self) -> int:
         return len(self.results) - self.succeeded
 
+    @property
+    def total(self) -> int:
+        return len(self.results)
+
 
 def run_batch(
     input_dir: Path,
@@ -36,17 +42,21 @@ def run_batch(
     recursive: bool = False,
     refine_rgb: bool = False,
     progress: Callable[[int, int, FileResult], None] | None = None,
+    cancel_event: Event | None = None,
 ) -> BatchReport:
     input_dir = Path(input_dir).expanduser()
     output_dir = Path(output_dir).expanduser()
-    input_resolved = input_dir.resolve()
-    output_resolved = output_dir.resolve()
+    input_resolved, output_resolved = input_dir.resolve(), output_dir.resolve()
     if output_resolved == input_resolved or input_resolved in output_resolved.parents:
         raise ValueError("Output directory cannot be the input directory or a child of it")
 
     sources = discover_images(input_dir, recursive=recursive)
     results: list[FileResult] = []
+    cancelled = False
     for index, source in enumerate(sources, start=1):
+        if cancel_event is not None and cancel_event.is_set():
+            cancelled = True
+            break
         try:
             rgb = load_rgb(source)
             prediction = engine.predict(rgb)
@@ -58,9 +68,13 @@ def run_batch(
             relative = source.resolve().relative_to(input_resolved)
             output = (output_dir / relative).with_suffix(".png")
             if output.exists():
-                output = output.with_name(
-                    f"{source.stem}__{source.suffix.lstrip('.').lower()}.png"
-                )
+                base = f"{source.stem}__{source.suffix.lstrip('.').lower()}"
+                output = output.with_name(f"{base}.png")
+                serial = 2
+                while output.exists():
+                    output = output.with_name(f"{base}_{serial}.png")
+                    serial += 1
+
             save_rgba(final_rgb, prediction.alpha, output)
             message = prediction.warning or (
                 f"{prediction.model_name} @ {prediction.used_resolution}px"
@@ -71,4 +85,7 @@ def run_batch(
         results.append(result)
         if progress:
             progress(index, len(sources), result)
-    return BatchReport(results)
+
+    if cancel_event is not None and cancel_event.is_set() and len(results) < len(sources):
+        cancelled = True
+    return BatchReport(results, cancelled=cancelled)
